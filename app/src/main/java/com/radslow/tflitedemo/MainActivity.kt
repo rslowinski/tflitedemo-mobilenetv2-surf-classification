@@ -3,6 +3,7 @@ package com.radslow.tflitedemo
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
@@ -11,18 +12,20 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var classifier: Classifier
 
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        classifier = Classifier(assets)
+
         if (!canUseCamera()) {
             requestCameraPermissions()
         } else {
             setupCamera()
         }
-
     }
 
     private fun requestCameraPermissions() {
@@ -35,7 +38,15 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("MissingPermission")
     private fun setupCamera() {
-        camera.addPictureTakenListener {}
+        camera.addPictureTakenListener {
+            AsyncTask.execute {
+                val recognitions = classifier.recognize(it.data)
+                val txt = recognitions.take(5).joinToString(separator = "\n")
+                runOnUiThread {
+                    Toast.makeText(this, txt, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
 
         capturePhoto.setOnClickListener {
             camera.capture()
