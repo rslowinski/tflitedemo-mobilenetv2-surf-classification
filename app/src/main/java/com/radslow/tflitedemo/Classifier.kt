@@ -16,10 +16,10 @@ import java.util.*
 class Classifier(assetManager: AssetManager) {
 
     private val labels: List<String>
-    private val interpreter: Interpreter
+    private val model: Interpreter
 
     init {
-        interpreter = Interpreter(getModelByteBuffer(assetManager, MODEL_PATH))
+        model = Interpreter(getModelByteBuffer(assetManager, MODEL_PATH))
         labels = getLabels(assetManager, LABELS_PATH)
     }
 
@@ -47,7 +47,7 @@ class Classifier(assetManager: AssetManager) {
             }
         }
 
-        interpreter.run(byteBuffer, result)
+        model.run(byteBuffer, result)
         return parseResults(result)
     }
 
