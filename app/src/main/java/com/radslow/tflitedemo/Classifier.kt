@@ -63,7 +63,6 @@ class Classifier(assetManager: AssetManager) {
         return recognitions.sortedByDescending { it.probability }
     }
 
-
     @Throws(IOException::class)
     private fun getModelByteBuffer(assetManager: AssetManager, modelPath: String): ByteBuffer {
         val fileDescriptor = assetManager.openFd(modelPath)
@@ -77,14 +76,14 @@ class Classifier(assetManager: AssetManager) {
 
     @Throws(IOException::class)
     private fun getLabels(assetManager: AssetManager, labelPath: String): List<String> {
-        val labelList = ArrayList<String>()
+        val labels = ArrayList<String>()
         val reader = BufferedReader(InputStreamReader(assetManager.open(labelPath)))
         while (true) {
-            val line = reader.readLine() ?: break
-            labelList.add(line)
+            val label = reader.readLine() ?: break
+            labels.add(label)
         }
         reader.close()
-        return labelList
+        return labels
     }
 
     companion object {
