@@ -24,7 +24,7 @@ class Classifier(assetManager: AssetManager) {
     }
 
     fun recognize(data: ByteArray): List<Recognition> {
-        val result = Array(1) { ByteArray(labels.size) }
+        val result = Array(1) { FloatArray(labels.size) }
 
         val unscaledBitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
         val bitmap =
@@ -41,9 +41,9 @@ class Classifier(assetManager: AssetManager) {
         for (i in 0 until MODEL_INPUT_SIZE) {
             for (j in 0 until MODEL_INPUT_SIZE) {
                 val pixelValue = intValues[pixel++]
-                byteBuffer.put((pixelValue shr 16 and 0xFF).toByte())
-                byteBuffer.put((pixelValue shr 8 and 0xFF).toByte())
-                byteBuffer.put((pixelValue and 0xFF).toByte())
+                byteBuffer.putFloat((pixelValue shr 16 and 0xFF) / 255f)
+                byteBuffer.putFloat((pixelValue shr 8 and 0xFF) / 255f)
+                byteBuffer.putFloat((pixelValue and 0xFF) / 255f)
             }
         }
 
@@ -51,12 +51,12 @@ class Classifier(assetManager: AssetManager) {
         return parseResults(result)
     }
 
-    private fun parseResults(result: Array<ByteArray>): List<Recognition> {
+    private fun parseResults(result: Array<FloatArray>): List<Recognition> {
 
         val recognitions = mutableListOf<Recognition>()
 
         labels.forEachIndexed { index, label ->
-            val probability = (result[0][index].toInt() and 0xff) / 255f
+            val probability = result[0][index]
             recognitions.add(Recognition(label, probability))
         }
 
@@ -88,13 +88,13 @@ class Classifier(assetManager: AssetManager) {
     }
 
     companion object {
-        private const val BATCH_SIZE = 1
-        private const val MODEL_INPUT_SIZE = 224
-        private const val BYTES_PER_CHANNEL = 1
-        private const val PIXEL_SIZE = 3
+        private const val BATCH_SIZE = 1 // process only 1 image at a time
+        private const val MODEL_INPUT_SIZE = 224 // 224x224
+        private const val BYTES_PER_CHANNEL = 4 // float size
+        private const val PIXEL_SIZE = 3 // rgb
 
         private const val LABELS_PATH = "labels.txt"
-        private const val MODEL_PATH = "mobilenet_v2_1.0_224_quant.tflite"
+        private const val MODEL_PATH = "surf_model.tflite"
     }
 
 }
