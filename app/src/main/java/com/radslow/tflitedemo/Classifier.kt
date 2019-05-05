@@ -24,23 +24,29 @@ class Classifier(assetManager: AssetManager) {
     }
 
     fun recognize(data: ByteArray): List<Recognition> {
-        val result = Array(1) { FloatArray(labels.size) }
+        val result = Array(BATCH_SIZE) { FloatArray(labels.size) }
 
         val unscaledBitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
         val bitmap =
             Bitmap.createScaledBitmap(unscaledBitmap, MODEL_INPUT_SIZE, MODEL_INPUT_SIZE, false)
 
         val byteBuffer = ByteBuffer
-            .allocateDirect(BATCH_SIZE * MODEL_INPUT_SIZE * MODEL_INPUT_SIZE * BYTES_PER_CHANNEL * PIXEL_SIZE)
+            .allocateDirect(
+                BATCH_SIZE *
+                        MODEL_INPUT_SIZE *
+                        MODEL_INPUT_SIZE *
+                        BYTES_PER_CHANNEL *
+                        PIXEL_SIZE
+            )
             .apply { order(ByteOrder.nativeOrder()) }
 
-        val intValues = IntArray(MODEL_INPUT_SIZE * MODEL_INPUT_SIZE)
-        bitmap.getPixels(intValues, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
+        val pixelValues = IntArray(MODEL_INPUT_SIZE * MODEL_INPUT_SIZE)
+        bitmap.getPixels(pixelValues, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
 
         var pixel = 0
         for (i in 0 until MODEL_INPUT_SIZE) {
             for (j in 0 until MODEL_INPUT_SIZE) {
-                val pixelValue = intValues[pixel++]
+                val pixelValue = pixelValues[pixel++]
                 byteBuffer.putFloat((pixelValue shr 16 and 0xFF) / 255f)
                 byteBuffer.putFloat((pixelValue shr 8 and 0xFF) / 255f)
                 byteBuffer.putFloat((pixelValue and 0xFF) / 255f)
