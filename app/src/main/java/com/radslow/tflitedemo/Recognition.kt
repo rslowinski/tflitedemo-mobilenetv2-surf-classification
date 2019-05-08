@@ -5,5 +5,5 @@ data class Recognition(
     val probability: Float
 ) {
     override fun toString() =
-        "$name : ${probability*100f}%"
+        "$name : ${probability*100}%"
 }
