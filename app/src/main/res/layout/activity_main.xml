@@ -22,14 +22,16 @@
         app:touchToFocus="true"
         app:zsl="true" />
 
-    <ImageButton
+    <TextView
         android:id="@+id/capturePhoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="64dp"
-        android:background="@android:color/transparent"
+        android:background="@android:color/holo_blue_bright"
         android:padding="8dp"
-        android:src="@drawable/ic_camera"
+        android:textSize="30sp"
+        android:text="SCAN"
+        android:textColor="@android:color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
