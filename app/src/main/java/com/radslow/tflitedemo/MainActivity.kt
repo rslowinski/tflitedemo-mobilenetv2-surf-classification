@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         camera.addPictureTakenListener {
             AsyncTask.execute {
                 val recognitions = classifier.recognize(it.data)
-                val txt = recognitions.take(5).joinToString(separator = "\n")
+                val txt = recognitions.joinToString(separator = "\n")
                 runOnUiThread {
                     Toast.makeText(this, txt, Toast.LENGTH_LONG).show()
                 }
